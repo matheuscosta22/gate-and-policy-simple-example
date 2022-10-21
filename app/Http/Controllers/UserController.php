@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\Access\Gate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,12 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    public function index(Request $request): JsonResponse
-    {
-        $users = User::query()->paginate();
-        return response()->json($users);
-    }
-
     /**
      * @throws AuthorizationException
      */
@@ -31,10 +24,13 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function read(Request $request): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function read(User $user): JsonResponse
     {
-        $users = User::query()->paginate();
-        return response()->json($users);
+        $this->authorize('readUser', auth()->user());
+        return response()->json($user);
     }
 
     public function login(Request $request)
